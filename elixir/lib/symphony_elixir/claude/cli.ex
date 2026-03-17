@@ -44,13 +44,11 @@ defmodule SymphonyElixir.Claude.CLI do
     on_message = Keyword.get(opts, :on_message, &default_on_message/1)
     config = Config.settings!()
 
-    args = build_cli_args(session, config)
+    args = build_cli_args(session, config, prompt)
 
     case start_claude_port(session.workspace, args, session.worker_host, config) do
       {:ok, port} ->
         metadata = port_metadata(port, session.worker_host)
-
-        send_prompt_to_stdin(port, prompt)
 
         Logger.info("Claude session started for #{issue_context(issue)} session_id=#{session.session_id || "new"}")
 
@@ -99,24 +97,22 @@ defmodule SymphonyElixir.Claude.CLI do
 
   # --- CLI argument building ---
 
-  defp build_cli_args(session, config) do
+  defp build_cli_args(session, config, prompt) do
     claude_config = config.claude
 
-    args =
-      [
-        "-p",
-        "-",
-        "--output-format",
-        "stream-json"
-      ] ++
-        permission_mode_args(claude_config.permission_mode) ++
-        resume_args(session.session_id) ++
-        model_args(claude_config.model) ++
-        max_turns_args(claude_config.max_turns) ++
-        append_system_prompt_args(claude_config.append_system_prompt) ++
-        mcp_config_args(claude_config.mcp_config)
-
-    args
+    [
+      "-p",
+      prompt,
+      "--output-format",
+      "stream-json",
+      "--verbose"
+    ] ++
+      permission_mode_args(claude_config.permission_mode) ++
+      resume_args(session.session_id) ++
+      model_args(claude_config.model) ++
+      max_turns_args(claude_config.max_turns) ++
+      append_system_prompt_args(claude_config.append_system_prompt) ++
+      mcp_config_args(claude_config.mcp_config)
   end
 
   defp permission_mode_args("dangerously-skip-permissions"),
@@ -189,11 +185,6 @@ defmodule SymphonyElixir.Claude.CLI do
       "exec #{command} #{escaped_args}"
     ]
     |> Enum.join(" && ")
-  end
-
-  defp send_prompt_to_stdin(port, prompt) do
-    Port.command(port, prompt)
-    Port.command(port, <<4>>)
   end
 
   defp linear_env_vars do

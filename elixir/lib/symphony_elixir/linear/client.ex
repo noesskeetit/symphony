@@ -398,8 +398,21 @@ defmodule SymphonyElixir.Linear.Client do
     Req.post(Config.settings!().tracker.endpoint,
       headers: headers,
       json: payload,
-      connect_options: [timeout: 30_000]
+      connect_options: [timeout: 30_000] ++ proxy_connect_options()
     )
+  end
+
+  defp proxy_connect_options do
+    case System.get_env("HTTPS_PROXY") || System.get_env("HTTP_PROXY") do
+      nil ->
+        []
+
+      proxy_url ->
+        uri = URI.parse(proxy_url)
+        host = uri.host || "127.0.0.1"
+        port = uri.port || 8080
+        [proxy: {:http, host, port, []}]
+    end
   end
 
   defp decode_linear_response(%{"data" => %{"issues" => %{"nodes" => nodes}}}, assignee_filter) do

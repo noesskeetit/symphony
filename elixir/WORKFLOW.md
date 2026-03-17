@@ -1,7 +1,7 @@
 ---
 tracker:
   kind: linear
-  project_slug: "symphony-0c79b11b75ea"
+  project_slug: "perekuphelper-e49ec920ea42"
   active_states:
     - Todo
     - In Progress
@@ -19,12 +19,7 @@ workspace:
   root: ~/code/symphony-workspaces
 hooks:
   after_create: |
-    git clone --depth 1 https://github.com/openai/symphony .
-    if command -v mise >/dev/null 2>&1; then
-      cd elixir && mise trust && mise exec -- mix deps.get
-    fi
-  before_remove: |
-    cd elixir && mise exec -- mix workspace.before_remove
+    git clone --depth 1 https://github.com/noesskeetit/perekup_helper .
 agent:
   max_concurrent_agents: 10
   max_turns: 20
