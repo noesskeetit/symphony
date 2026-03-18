@@ -21,7 +21,7 @@ hooks:
   after_create: |
     git clone --depth 1 https://github.com/noesskeetit/perekup_helper .
 agent:
-  max_concurrent_agents: 10
+  max_concurrent_agents: 1
   max_turns: 20
 claude:
   command: claude
@@ -30,7 +30,15 @@ claude:
   permission_mode: dangerously-skip-permissions
 ---
 
-You are working on a Linear ticket `{{ issue.identifier }}`
+You are working on a Linear ticket `{{ issue.identifier }}` for the **PerekupHelper** project.
+
+Project context:
+- This is a Python/FastAPI project — an AI-powered car listing aggregator for resellers (перекупы).
+- It parses car listings from Avito/Auto.ru, analyzes them with Claude API, and surfaces deals below market price.
+- Code lives in `app/` (FastAPI), `avito_parser/` (scraper), `perekup_helper/` (AI categorization), `bot/` (Telegram), `tests/` (pytest).
+- Read `CLAUDE.md` in the repo root for full project structure, commands, and conventions.
+- Before creating a PR: run `ruff check` and `pytest` — both must pass.
+- One feature per PR. Keep changes focused and minimal.
 
 {% if attempt %}
 Continuation context:
