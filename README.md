@@ -1,38 +1,62 @@
-# Symphony
+# Symphony (Custom Fork)
 
-Symphony turns project work into isolated, autonomous implementation runs, allowing teams to manage
-work instead of supervising coding agents.
-
-[![Symphony demo video preview](.github/media/symphony-demo-poster.jpg)](.github/media/symphony-demo.mp4)
-
-_In this [demo video](.github/media/symphony-demo.mp4), Symphony monitors a Linear board for work and spawns agents to handle the tasks. The agents complete the tasks and provide proof of work: CI status, PR review feedback, complexity analysis, and walkthrough videos. When accepted, the agents land the PR safely. Engineers do not need to supervise Codex; they can manage the work at a higher level._
+Fork of [openai/symphony](https://github.com/openai/symphony), adapted to use
+**Claude Code CLI** instead of Codex as the agent backend.
 
 > [!WARNING]
 > Symphony is a low-key engineering preview for testing in trusted environments.
+
+## What changed from upstream
+
+| Area | Upstream | This fork |
+|------|----------|-----------|
+| Agent backend | Codex app-server | Claude Code CLI (`claude`) |
+| Model | GPT | Claude Opus |
+| Permissions | Codex sandbox policies | `dangerously-skip-permissions` |
+| Telegram | — | Claude Code Telegram channel plugin |
+
+## Telegram Integration
+
+This fork integrates with Telegram via the
+[Claude Code Telegram plugin](https://github.com/anthropics/claude-code-plugins).
+Once configured, the agent session can receive messages and respond directly in
+Telegram — useful for monitoring task progress and interacting with the agent
+remotely.
+
+### Setup
+
+1. Create a Telegram bot via [@BotFather](https://t.me/BotFather) and save the
+   token.
+2. Run `/telegram:configure` in Claude Code to save the bot token.
+3. Send any message to your bot in Telegram — it will prompt a pairing code.
+4. Run `/telegram:access pair <code>` in Claude Code to approve access.
+5. Optionally set policy to `allowlist` via `/telegram:access policy allowlist`.
+
+After that, messages sent to the bot are forwarded to the active Claude Code
+session and replies are sent back to Telegram.
 
 ## Running Symphony
 
 ### Requirements
 
 Symphony works best in codebases that have adopted
-[harness engineering](https://openai.com/index/harness-engineering/). Symphony is the next step --
-moving from managing coding agents to managing work that needs to get done.
+[harness engineering](https://openai.com/index/harness-engineering/). Symphony
+is the next step — moving from managing coding agents to managing work that
+needs to get done.
 
-### Option 1. Make your own
+### Quick start
 
-Tell your favorite coding agent to build Symphony in a programming language of your choice:
+Check out [elixir/README.md](elixir/README.md) for instructions on how to set
+up your environment and run the Elixir-based Symphony orchestrator.
 
-> Implement Symphony according to the following spec:
-> https://github.com/openai/symphony/blob/main/SPEC.md
+### WORKFLOW.md
 
-### Option 2. Use our experimental reference implementation
+The `elixir/WORKFLOW.md` file defines the orchestration contract: which Linear
+project to poll, how to bootstrap workspaces, and the full agent prompt
+template. See [elixir/README.md](elixir/README.md) for configuration details.
 
-Check out [elixir/README.md](elixir/README.md) for instructions on how to set up your environment
-and run the Elixir-based Symphony implementation. You can also ask your favorite coding agent to
-help with the setup:
-
-> Set up Symphony for my repository based on
-> https://github.com/openai/symphony/blob/main/elixir/README.md
+Current configuration points to the **PerekupHelper** project on Linear and
+clones the repo into isolated workspaces for each issue.
 
 ---
 

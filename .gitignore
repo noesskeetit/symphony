@@ -1,2 +1,14 @@
 .env
 .env.*
+!.env.example
+
+# Private keys and secrets
+private_key
+*.pem
+*.key
+
+# Claude Code local state
+.claude/
+
+# Research notes (local only)
+research/
